@@ -1,0 +1,2 @@
+# istanbul
+Omeka S theme
