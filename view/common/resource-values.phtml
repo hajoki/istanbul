@@ -1,0 +1,51 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$labelInfo = $this->setting('property_label_information');
+$path =  $_SERVER["REQUEST_URI"];
+$parts = explode('/', $path);
+$current_locale = $parts[3];
+
+?>
+<?php foreach ($values as $term => $propertyData): ?>
+    <?php if ($propertyData['property']->localName() != 'identifier'): ?>
+        <div class="property">
+            <h4>
+            <?php if ($propertyData['alternate_label']): ?>
+            <?php echo $escape($propertyData['alternate_label']); ?>
+            <?php else: ?>
+            <?php echo $escape($propertyData['property']->label()); ?>
+            <?php endif; ?>
+            <?php if ('term' === $labelInfo): ?>
+            <span class="field-term">(<?php echo $escape($propertyData['property']->term()); ?>)</span>
+            <?php elseif ('vocab' === $labelInfo): ?>
+            <span class="field-term">(<?php echo $escape($propertyData['property']->vocabulary()->label()); ?>)</span>
+            <?php endif; ?>
+            </h4>
+
+            <?php foreach ($propertyData['values'] as $value): ?>
+                <?php
+                $class = 'value';
+                if ('resource' == $value->type()) {
+                    $valueResource = $value->valueResource();
+                    $class .= ' ' . $escape($valueResource->resourceName());
+                } elseif ('uri' == $value->type()) {
+                    $class .= ' uri';
+                }
+                ?>
+                <?php if (!$language = $value->lang() or $current_locale == $value->lang()): ?>
+                    <div class="<?php echo $class; ?>">
+                        <?php if ('resource' == $value->type() && $thumbnail = $valueResource->primaryMedia()): ?>
+                            <img
+                                src="<?php echo $escape($thumbnail->thumbnailUrl('square')); ?>"
+                                title="<?php echo $escape($thumbnail->displayTitle()); ?>"
+                                alt="<?php echo $escape($thumbnail->mediaType()); ?> thumbnail"
+                            >
+                        <?php endif; ?>
+                        
+                        <?php echo $value->asHtml(); ?>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+<?php endforeach; ?>

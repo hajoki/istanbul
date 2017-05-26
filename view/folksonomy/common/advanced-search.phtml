@@ -1,0 +1,27 @@
+<?php
+$searchTagForm->prepare();
+?>
+
+<div id="tag-search-container">
+	<div id="tag-criteria">
+	<?php 
+	$element = $searchTagForm->get('has_tags');
+	echo $this->formRow($element);
+	$element = $searchTagForm->get('tag');
+	echo $this->formRow($element);
+	?>
+	</div>
+
+	<?php echo $this->partial('folksonomy/common/tag-cloud', [
+		'tags' => null,
+		'resourceName' => 'items',
+		// Never display "rejected" tags, in all cases.
+		// The "proposed" status may be filtered via the visibility filter.
+		'statuses' => ['allowed', 'approved', 'proposed'],
+		'orderBy' => 'tag.name',
+		'link' => true,
+		'maxClasses' => null,
+		'tagNumbers' => 'after',
+	]); ?>
+</div>
+
